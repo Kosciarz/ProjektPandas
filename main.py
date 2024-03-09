@@ -34,19 +34,57 @@ class Program:
         for index, name in enumerate(column_names, start=1):
             print(f"{index}. {name}")
 
+    @staticmethod
+    def sort_by_column(df):
+        while True:
+            print("Wybierz kolumnę, według której chcesz posortować dane:")
+            Program.show_columns()
+            column_name = input().capitalize().strip()
+            if column_name in df.columns:
+                break
+            else:
+                print(f"Nie ma kolumny o nazwie '{column_name}'. Spróbuj ponownie.")
+
+        print(df.sort_values(by=column_name))
+
 
 def get_starting_position():
     return int(input("Wybierz skąd chciałbyś zobaczyć wiersze (1 - 3):\n1 Początek\n2 Dowolna pozycja\n3 Koniec\n"))
 
 
+def show_menu():
+    print("\nMenu:")
+    print("1. Pokaż wszystkie wiersze")
+    print("2. Pokaż określoną liczbę wierszy")
+    print("3. Sortuj dane według kolumny")
+    print("4. Wyświetl wybrane kolumny")
+    print("5. Wyjdź")
+
+
+def choice_selection(choice):
+    match choice:
+        case 1:
+            Program.show_file()
+        case 2:
+            Program.show_n_rows()
+        case 3:
+            Program.show_columns()
+        case 4:
+            Program.show_selected_columns()
+        case 5:
+            exit(0)
+        case _:
+            print("Nieprawidłowy wybór. Spróbuj ponownie.")
+
+
 def main():
     file_path: str = ".\pokemon.csv"
     Program.set_file(file_path)
-    # Program.show_columns()
-    Program.show_n_rows()
-    # Program.show_file()
 
-    return 0
+    while True:
+        show_menu()
+        choice = int(input("Wybierz opcję: "))
+        choice_selection(choice)
 
 
 if __name__ == "__main__":
