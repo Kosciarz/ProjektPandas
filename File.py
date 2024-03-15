@@ -1,5 +1,5 @@
 import pandas as pd
-
+import matplotlib.pyplot as plt
 
 def show_position_menu():
     print("\nWybierz skąd chciałbyś zobaczyć wiersze:")
@@ -10,7 +10,7 @@ def show_position_menu():
 
 def get_starting_position() -> int:
     starting_position: int = int(input("Wybierz opcję: "))
-    if 1 <= starting_position <= 3:
+    if starting_position in range(1, 4):
         return starting_position
     print("\nNieprawidłowy wybór. Spróbuj ponownie.")
     get_starting_position()
@@ -49,14 +49,17 @@ class File:
 
     @staticmethod
     def set_df(file_path: str) -> None:
-        File.df = pd.read_csv(file_path)
+        try:
+            File.df = pd.read_csv(file_path)
+        except FileNotFoundError:
+            print(FileNotFoundError.filename)
 
     @staticmethod
     def show_file() -> None:
         print(File.df.to_string())
 
     @staticmethod
-    def show_columns():
+    def show_columns() -> None:
         column_names: list = File.df.columns.tolist()
         column_names.pop(0)
         print("\nNazwy wszystkich kolumn: ")
@@ -77,10 +80,10 @@ class File:
                 print(File.df.tail(number_of_rows))
 
     @staticmethod
-    def sort_by_column():
+    def sort_by_column() -> None:
         File.show_columns()
         while True:
-            column_name: str = input("Wybierz kolumnę: ").split(",")
+            column_name = input("Wybierz kolumnę: ").split(",")
             column_name = column_name[0]
             column_name = format_column_name(column_name)
             if column_name in File.df.columns:
@@ -94,7 +97,7 @@ class File:
     @staticmethod
     def show_selected_columns():
         File.show_columns()
-        selected_columns: list = []
+        selected_columns = []
         while True:
             column_names: list = input("Wybierz kolumny (oddziel je przecinkiem): ").split(",")
             for column_name in column_names:
@@ -106,3 +109,30 @@ class File:
             break
 
         print(File.df[selected_columns].to_string())
+
+    @staticmethod
+    def plot_attack_defense_distribution():
+        plt.figure(figsize=(12, 8))
+        plt.scatter(File.df["Attack"], File.df["Defense"])
+        plt.xlabel("Siła")
+        plt.ylabel("Defensywa")
+        plt.title("Stosunek Siły do Defensywy")
+        plt.grid(True)
+        print("Tip: Press 'f' (or Ctrl+f) to toggle full screen mode.")
+        plt.show()
+
+    @staticmethod
+    def show_most_hp_pokemons():
+        top_10_hp = File.df.nlargest(10, "HP")
+        pokemon_names = top_10_hp["Name"].tolist()
+        hp_values = top_10_hp["HP"].tolist()
+
+        plt.figure(figsize=(12, 8))
+        plt.bar(pokemon_names, hp_values, color="blue")
+        plt.xlabel("Nazwa")
+        plt.ylabel("HP")
+        plt.title("Top 10 Pokemonów z największą ilością punktów życia")
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
+        print("Naciśnij 'Ctrl+f' aby włączyć tryb pełnoekranowy")
+        plt.show()
